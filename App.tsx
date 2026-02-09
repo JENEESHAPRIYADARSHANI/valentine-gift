@@ -10,8 +10,10 @@ import {
 const App: React.FC = () => {
   const [view, setView] = useState<ViewState>("PROPOSAL");
 
-  const isEditMode =
-    new URLSearchParams(window.location.search).get("mode") === "edit";
+  const isViewMode =
+    new URLSearchParams(window.location.search).get("view") === "true";
+
+  const isEditMode = !isViewMode;
 
   const [memories, setMemories] = useState<MemoryImage[]>(() => {
     const saved = localStorage.getItem("valentine_memories");
@@ -34,14 +36,13 @@ const App: React.FC = () => {
   //shareable link
   const getShareableLink = () => {
     const url = new URL(window.location.href);
-    url.searchParams.delete("mode");
+    url.searchParams.set("view", "true");
     return url.toString();
   };
 
   const copyLink = async () => {
-    const link = getShareableLink();
-    await navigator.clipboard.writeText(link);
-    alert("Link copied! 💖");
+    await navigator.clipboard.writeText(getShareableLink());
+    alert("Shareable link copied ");
   };
 
   return (
@@ -67,16 +68,16 @@ const App: React.FC = () => {
       </main>
 
       <footer className="py-4 text-center text-rose-300 text-sm">
-        Built with 💖 by <a className="underline">Your Name</a>
+        Built with 💖 by <a className="underline">JEN</a>
       </footer>
 
       {isEditMode && (
         <div className="fixed bottom-5 left-5 bg-white p-4 rounded-2xl shadow-lg max-w-xs">
           <p className="text-rose-600 font-bold text-sm mb-1">
-            ✨ Creator Mode Active
+            ✨ Edit Mode (Default)
           </p>
           <p className="text-xs text-rose-400 mb-3">
-            Share this link with your Valentine 💕
+            Share this link to send a view-only version
           </p>
 
           <div className="flex gap-2">
