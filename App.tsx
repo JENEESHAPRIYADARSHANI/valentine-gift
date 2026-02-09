@@ -10,11 +10,9 @@ import {
 const App: React.FC = () => {
   const [view, setView] = useState<ViewState>("PROPOSAL");
 
-  // Mode detection: ?mode=edit enables editing/deleting features
   const isEditMode =
     new URLSearchParams(window.location.search).get("mode") === "edit";
 
-  // Load from local storage or defaults
   const [memories, setMemories] = useState<MemoryImage[]>(() => {
     const saved = localStorage.getItem("valentine_memories");
     return saved ? JSON.parse(saved) : INITIAL_MEMORIES;
@@ -25,7 +23,6 @@ const App: React.FC = () => {
     return saved ? JSON.parse(saved) : INITIAL_LETTERS;
   });
 
-  // Sync with local storage
   useEffect(() => {
     localStorage.setItem("valentine_memories", JSON.stringify(memories));
   }, [memories]);
@@ -34,61 +31,67 @@ const App: React.FC = () => {
     localStorage.setItem("valentine_letters", JSON.stringify(letters));
   }, [letters]);
 
-  const handleYes = () => {
-    setView("CELEBRATION");
+  //shareable link
+  const getShareableLink = () => {
+    const url = new URL(window.location.href);
+    url.searchParams.delete("mode");
+    return url.toString();
   };
 
-  const addMemory = (newMemory: MemoryImage) => {
-    setMemories([newMemory, ...memories]);
-  };
-
-  const deleteMemory = (id: string) => {
-    setMemories(memories.filter((m) => m.id !== id));
-  };
-
-  const addLetter = (newLetter: LoveLetter) => {
-    setLetters([newLetter, ...letters]);
-  };
-
-  const deleteLetter = (id: string) => {
-    setLetters(letters.filter((l) => l.id !== id));
+  const copyLink = async () => {
+    const link = getShareableLink();
+    await navigator.clipboard.writeText(link);
+    alert("Link copied! 💖");
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-4">
-      <main className="w-full">
+    <div className="min-h-screen flex flex-col">
+      <main className="flex-1 flex items-center justify-center p-4">
         {view === "PROPOSAL" ? (
-          <Screen1 onAccept={handleYes} />
+          <Screen1 onAccept={() => setView("CELEBRATION")} />
         ) : (
           <Screen2
             memories={memories}
             letters={letters}
-            onAddMemory={addMemory}
-            onDeleteMemory={deleteMemory}
-            onAddLetter={addLetter}
-            onDeleteLetter={deleteLetter}
+            onAddMemory={(m) => setMemories([m, ...memories])}
+            onDeleteMemory={(id) =>
+              setMemories(memories.filter((m) => m.id !== id))
+            }
+            onAddLetter={(l) => setLetters([l, ...letters])}
+            onDeleteLetter={(id) =>
+              setLetters(letters.filter((l) => l.id !== id))
+            }
             isEditMode={isEditMode}
           />
         )}
       </main>
 
-      {/* Branding Footer */}
-      <footer className="w-full py-6 text-center text-rose-300 text-sm font-medium">
-        Built with 💖 by{" "}
-        <a href="#" className="hover:text-rose-500 underline transition-colors">
-          Your Name
-        </a>
+      <footer className="py-4 text-center text-rose-300 text-sm">
+        Built with 💖 by <a className="underline">Your Name</a>
       </footer>
 
-      {/* Edit Mode Helper */}
       {isEditMode && (
-        <div className="fixed bottom-6 left-6 bg-white/90 backdrop-blur-md p-4 rounded-3xl shadow-xl border border-rose-100 z-50 animate-bounce">
-          <p className="font-bold text-rose-600 text-sm mb-1">
+        <div className="fixed bottom-5 left-5 bg-white p-4 rounded-2xl shadow-lg max-w-xs">
+          <p className="text-rose-600 font-bold text-sm mb-1">
             ✨ Creator Mode Active
           </p>
-          <p className="text-rose-400 text-xs">
-            Share this URL without <b>?mode=edit</b> to your Valentine!
+          <p className="text-xs text-rose-400 mb-3">
+            Share this link with your Valentine 💕
           </p>
+
+          <div className="flex gap-2">
+            <input
+              readOnly
+              value={getShareableLink()}
+              className="flex-1 px-3 py-2 text-xs rounded-lg border border-rose-200 bg-rose-50 text-rose-600 truncate"
+            />
+            <button
+              onClick={copyLink}
+              className="px-3 py-2 bg-rose-500 text-white rounded-lg text-xs font-bold hover:bg-rose-600"
+            >
+              Copy
+            </button>
+          </div>
         </div>
       )}
     </div>
