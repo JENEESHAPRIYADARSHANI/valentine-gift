@@ -48,15 +48,21 @@ const Screen2: React.FC<Screen2Props> = ({
       }`}
     >
       {/* YAY SECTION */}
-      <div className="text-center mb-12">
-        <h1 className="font-cursive text-5xl md:text-7xl text-rose-600 mb-4 drop-shadow-sm">
-          Knew that you'd say yes! 
-        </h1>
+      {!isEditMode && (
+        <div className="text-center mb-12 px-4">
+          <h1 className="font-cursive text-3xl sm:text-6xl text-rose-600 mb-6">
+            Knew that you'd say yes! 💖
+          </h1>
 
-        <div className="flex justify-center mt-6">
-          <Lottie animationData={teddyAnimation} loop className="w-56 h-56" />
+          <div className="flex justify-center">
+            <Lottie
+              animationData={teddyAnimation}
+              loop
+              className="w-40 h-40 sm:w-56 sm:h-56"
+            />
+          </div>
         </div>
-      </div>
+      )}
 
       {/* TABS */}
       <div className="flex flex-col items-center gap-6 mb-10">
@@ -100,7 +106,7 @@ const Screen2: React.FC<Screen2Props> = ({
       {/* CONTENT */}
       <div className="min-h-[500px]">
         {activeTab === "IMAGES" ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-12 p-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 px-4 sm:px-6">
             {memories.map((memory, index) => (
               <div
                 key={memory.id}
@@ -117,7 +123,7 @@ const Screen2: React.FC<Screen2Props> = ({
             ))}
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-10 p-6 max-w-4xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 px-4 sm:px-6 max-w-5xl mx-auto">
             {letters.map((letter, index) => (
               <div
                 key={letter.id}
@@ -143,13 +149,6 @@ const Screen2: React.FC<Screen2Props> = ({
           onSave={handleSave}
         />
       )}
-
-      {/* FOOTER TEXT */}
-      <div className="mt-20 text-center pb-10 text-rose-300 font-medium">
-        {isEditMode
-          ? "Share your love! 💖"
-          : "I cherish every moment with you ✨"}
-      </div>
     </div>
   );
 };
